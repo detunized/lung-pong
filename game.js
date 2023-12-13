@@ -73,6 +73,9 @@ let brickAnimationState = bricks.map(row => row.map(() => 0));
 const trailLength = 20;
 let trail = [];
 
+const smokeLength = 100;
+let smoke = [];
+
 // Event listeners for key presses
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
@@ -84,6 +87,8 @@ function reset() {
     dy = -2;
     cigaretteX = (canvas.width - cigaretteWidth) / 2;
     waitForStart = true;
+    trail = [];
+    smoke = [];
 }
 
 function keyDownHandler(e) {
@@ -156,6 +161,66 @@ function drawCigarette() {
     ctx.fillStyle = "#FF4500"; // Orange color for the burning tip
     ctx.fill();
     ctx.closePath();
+
+    if (Math.random() < 0.1) {
+        let scale = Math.random() * 0.75 + 0.25;
+        let rotation = Math.random() * 360;
+        let opacity = Math.random() * 0.25;
+        smoke.push({
+            x: cigaretteX + cigaretteWidth - (cigaretteWidth * 0.05),
+            y: cigaretteY,
+            scale: scale,
+            rotation: rotation,
+            opacity: 0.25
+        });
+        if (smoke.length > smokeLength) {
+            smoke.shift();
+        }
+    }
+
+    drawSmoke();
+    updateSmoke();
+}
+
+function drawSmoke() {
+    for (let i = 0; i < smoke.length; i++) {
+        let alpha = (i / smoke.length) * 0.07;
+        let size = 10 * smoke[i].scale;
+        let centerX = smoke[i].x + size / 2;
+        let centerY = smoke[i].y + size / 2;
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(smoke[i].rotation);
+        ctx.beginPath();
+        ctx.rect(-size / 2, -size / 2, size, size);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+
+        // ctx.beginPath();
+        // ctx.rect(smoke[i].x, smoke[i].y, size, size);
+        // // rotate by smoke[i].rotation
+        // ctx.rotation = smoke[i].rotation;
+        // ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        // ctx.fill();
+        // ctx.closePath();
+    }
+}
+
+function updateSmoke() {
+    for (let i = 0; i < smoke.length; i++) {
+        smoke[i].y -= 1;
+        smoke[i].scale += 0.01;
+        //smoke[i].rotation += 0.01;
+        smoke[i].opacity -= 0.001;
+
+        if (smoke[i].opacity <= 0) {
+            smoke.splice(i, 1);
+            i--;
+        }
+    }
 }
 
 function getBrickX(row, col) {
