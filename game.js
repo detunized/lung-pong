@@ -57,6 +57,17 @@ let bricks = [
     [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
 ];
 
+const burnAwayAnimation = [
+    "#f00",
+    "#f00",
+    "#f00",
+    "#f00",
+    "#f00",
+    "#f00",
+    "#f00",
+    "#f00",
+];
+
 let brickAnimationState = bricks.map(row => row.map(() => 0));
 
 // Event listeners for key presses
@@ -148,17 +159,29 @@ function getBrickFromCoordinates(x, y) {
 function drawBricks() {
     for (let i = 0; i < bricks.length; i++) {
         for (let j = 0; j < bricks[i].length; j++) {
-            if (bricks[i][j]) {
+            let state = brickAnimationState[i][j];
+            if (bricks[i][j] || state > 0) {
                 let brickX = getBrickX(i, j);
                 let brickY = getBrickY(i, j);
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickSize, brickSize);
-                ctx.fillStyle = "#FFFFFF";
+                ctx.fillStyle = getBrickColor(state);
+                if (state > 0) {
+                    brickAnimationState[i][j]--;
+                }
                 ctx.fill();
                 ctx.closePath();
             }
         }
     }
+}
+
+function getBrickColor(state) {
+    if (state == 0 || state > burnAwayAnimation.length) {
+        return "#FFFFFF";
+    }
+
+    return burnAwayAnimation[state - 1];
 }
 
 // Main draw function
@@ -213,7 +236,7 @@ function update() {
 
         if (overlapX < (ballSize + brickSize) / 2 && overlapY < (ballSize + brickSize) / 2) {
             bricks[brickRC.row][brickRC.col] = 0;
-            brickAnimationState[brickRC.row][brickRC.col] = 0;
+            brickAnimationState[brickRC.row][brickRC.col] = burnAwayAnimation.length;
 
             if (overlapX >= overlapY) {
                 dx = -dx;
