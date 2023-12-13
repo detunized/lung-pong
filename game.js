@@ -98,10 +98,8 @@ function reset() {
 function keyDownHandler(e) {
     if (e.key === "Right" || e.key === "ArrowRight") {
         rightPressed = true;
-        waitForStart = false;
     } else if (e.key === "Left" || e.key === "ArrowLeft") {
         leftPressed = true;
-        waitForStart = false;
     } else if (e.keyCode === 32 && waitForStart) {
         waitForStart = false;
     }
@@ -277,10 +275,7 @@ function draw() {
     drawBall();
     drawCigarette();
 
-    if (!waitForStart) {
-        update();
-    }
-
+    update();
     requestAnimationFrame(draw);
 }
 
@@ -289,11 +284,19 @@ function getCigaretteWidth() {
 }
 
 function update() {
+    let cigDx = 0;
     if (rightPressed && cigaretteX < canvas.width - getCigaretteWidth()) {
-        cigaretteX += 5;
+        cigDx = 5;
     }
     else if (leftPressed && cigaretteX > 0) {
-        cigaretteX -= 5;
+        cigDx = -5;
+    }
+
+    cigaretteX += cigDx;
+
+    if (waitForStart) {
+        x += cigDx;
+        return;
     }
 
     let newX = x + dx;
