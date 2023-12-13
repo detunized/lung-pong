@@ -11,13 +11,25 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* make links white */
+        p, a {
+            color:#bbb;
         }
     </style>
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="600" height="800"></canvas>
-    <script src="game.js"></script>
+
+    <div>
+        <canvas id="gameCanvas" width="600" height="800"></canvas>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <p>Copyright&nbsp;(C)&nbsp;2023&nbsp;<a href="https://detunized.net">Dmitry Yakimenko</a>&nbsp;[<a href="https://github.com/detunized">Github</a>]&nbsp;[<a href="https://www.linkedin.com/in/dmitryyakimenko/">LinkedIn</a>]</p>
+        </div>
+        <script src="game.js"></script>
+    </div>
 </body>
 
 </html>
