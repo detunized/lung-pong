@@ -70,6 +70,9 @@ const burnAwayAnimation = [
 
 let brickAnimationState = bricks.map(row => row.map(() => 0));
 
+const trailLength = 20;
+let trail = [];
+
 // Event listeners for key presses
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
@@ -106,11 +109,29 @@ function keyUpHandler(e) {
 
 // Function to draw the square ball
 function drawBall() {
+    drawTrail();
+
     ctx.beginPath();
     ctx.rect(x, y, ballSize, ballSize); // Draw a square instead of a circle
     ctx.fillStyle = "#FFFFFF"; // Make the ball white
     ctx.fill();
     ctx.closePath();
+
+    trail.push({x, y});
+    if (trail.length > trailLength) {
+        trail.shift();
+    }
+}
+
+function drawTrail() {
+    for (let i = 0; i < trail.length; i++) {
+        let alpha = (i / trail.length) * 0.07;
+        ctx.beginPath();
+        ctx.rect(trail[i].x, trail[i].y, ballSize, ballSize);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+        ctx.closePath();
+    }
 }
 
 // Function to draw the cigarette bat
