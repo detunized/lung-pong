@@ -6,9 +6,12 @@ let y = canvas.height - 30;
 let dx = 2;
 let dy = -2;
 const ballSize = 10; // Side length for the square ball
-let cigaretteHeight = 10;
-let cigaretteWidth = 100;
-let cigaretteX = (canvas.width - cigaretteWidth) / 2;
+const cigaretteHeight = 10;
+const initialCigaretteWidth = 100;
+let filterWidth = 20;
+let burningTipWidth = 5;
+let tobaccoWidth = initialCigaretteWidth - filterWidth - burningTipWidth;
+let cigaretteX = (canvas.width - initialCigaretteWidth) / 2;
 let cigaretteY = (canvas.height - cigaretteHeight) * 7 / 8;
 let rightPressed = false;
 let leftPressed = false;
@@ -85,10 +88,11 @@ function reset() {
     y = cigaretteY - ballSize;
     dx = 2;
     dy = -2;
-    cigaretteX = (canvas.width - cigaretteWidth) / 2;
+    cigaretteX = (canvas.width - initialCigaretteWidth) / 2;
     waitForStart = true;
     trail = [];
     smoke = [];
+    tobaccoWidth = initialCigaretteWidth - filterWidth - burningTipWidth;
 }
 
 function keyDownHandler(e) {
@@ -141,23 +145,23 @@ function drawTrail() {
 
 // Function to draw the cigarette bat
 function drawCigarette() {
-    // Main body of the cigarette
+    // Filter of the cigarette
     ctx.beginPath();
-    ctx.rect(cigaretteX, cigaretteY, cigaretteWidth, cigaretteHeight);
-    ctx.fillStyle = "#F8F8FF"; // Light color for the cigarette paper
+    ctx.rect(cigaretteX, cigaretteY, filterWidth, cigaretteHeight);
+    ctx.fillStyle = "#FFDAB9"; // Peach color for the filter
     ctx.fill();
     ctx.closePath();
 
-    // Filter of the cigarette
+    // Main body of the cigarette
     ctx.beginPath();
-    ctx.rect(cigaretteX, cigaretteY, cigaretteWidth * 0.2, cigaretteHeight);
-    ctx.fillStyle = "#FFDAB9"; // Peach color for the filter
+    ctx.rect(cigaretteX + filterWidth, cigaretteY, tobaccoWidth, cigaretteHeight);
+    ctx.fillStyle = "#F8F8FF"; // Light color for the cigarette paper
     ctx.fill();
     ctx.closePath();
 
     // Burning tip of the cigarette
     ctx.beginPath();
-    ctx.rect(cigaretteX + cigaretteWidth - (cigaretteWidth * 0.05), cigaretteY, cigaretteWidth * 0.05, cigaretteHeight);
+    ctx.rect(cigaretteX + filterWidth + tobaccoWidth, cigaretteY, burningTipWidth, cigaretteHeight);
     ctx.fillStyle = "#FF4500"; // Orange color for the burning tip
     ctx.fill();
     ctx.closePath();
@@ -167,7 +171,7 @@ function drawCigarette() {
         let rotation = Math.random() * 360;
         let opacity = Math.random() * 0.25;
         smoke.push({
-            x: cigaretteX + cigaretteWidth - (cigaretteWidth * 0.05),
+            x: cigaretteX + filterWidth + tobaccoWidth + burningTipWidth / 2,
             y: cigaretteY,
             scale: scale,
             rotation: rotation,
@@ -180,6 +184,10 @@ function drawCigarette() {
 
     drawSmoke();
     updateSmoke();
+
+    if (!waitForStart) {
+        tobaccoWidth = Math.max(0, tobaccoWidth - 0.01);
+    }
 }
 
 function drawSmoke() {
@@ -198,14 +206,6 @@ function drawSmoke() {
         ctx.fill();
         ctx.closePath();
         ctx.restore();
-
-        // ctx.beginPath();
-        // ctx.rect(smoke[i].x, smoke[i].y, size, size);
-        // // rotate by smoke[i].rotation
-        // ctx.rotation = smoke[i].rotation;
-        // ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-        // ctx.fill();
-        // ctx.closePath();
     }
 }
 
@@ -213,7 +213,7 @@ function updateSmoke() {
     for (let i = 0; i < smoke.length; i++) {
         smoke[i].y -= 1;
         smoke[i].scale += 0.01;
-        //smoke[i].rotation += 0.01;
+        smoke[i].rotation += 0.1;
         smoke[i].opacity -= 0.001;
 
         if (smoke[i].opacity <= 0) {
@@ -284,8 +284,12 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+function getCigaretteWidth() {
+    return filterWidth + tobaccoWidth + burningTipWidth;
+}
+
 function update() {
-    if (rightPressed && cigaretteX < canvas.width - cigaretteWidth) {
+    if (rightPressed && cigaretteX < canvas.width - getCigaretteWidth()) {
         cigaretteX += 5;
     }
     else if (leftPressed && cigaretteX > 0) {
@@ -346,7 +350,7 @@ function update() {
     if (y + dy < 0) {
         dy = -dy;
     } else if (y + ballSize <= cigaretteY && y + dy + ballSize >= cigaretteY) {
-        if(x > cigaretteX && x < cigaretteX + cigaretteWidth) {
+        if(x > cigaretteX && x < cigaretteX + getCigaretteWidth()) {
             dy = -dy;
         }
     } else if (y + dy > canvas.height) {
@@ -359,5 +363,4 @@ function update() {
 canvas.style.background = "#000000";
 
 reset();
-waitForStart = false;
 draw(); // Call the draw function to start the game loop
