@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Quit Smoking Breakout Game</title>
     <style>
@@ -14,15 +13,14 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* make links white */
         p, a {
             color:#bbb;
         }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SHWZN6VT5J"></script>
 </head>
 
 <body>
-
     <div>
         <canvas id="gameCanvas" width="600" height="800"></canvas>
         <div style="display: flex; justify-content: center; align-items: center;">
@@ -30,6 +28,15 @@
         </div>
         <script src="game.js" type="module"></script>
     </div>
+    <script>
+        var doNotTrack = false;
+        if (!doNotTrack) {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-SHWZN6VT5J', { 'anonymize_ip': false });
+        }
+    </script>
 </body>
 
 </html>
